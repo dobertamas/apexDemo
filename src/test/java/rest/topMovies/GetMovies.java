@@ -47,11 +47,10 @@ public class GetMovies {
     @Test
     public void findDifferences() {
 
-        // System.out.println(getOneHundredIds());
-
         final List<LinkedHashMap<Object, Object>> oneHundred = getOneHundredIds();
         System.out.println(oneHundred);
         for (LinkedHashMap<Object, Object> item : oneHundred) {
+
             System.out.println(item.size());
             Object id = item.get("id");
             Object title = item.get("title");
@@ -59,19 +58,39 @@ public class GetMovies {
             Object rank = item.get("rank");
 
             // get the single item for the comparisons
-            final Response singleItem = getSingleItem(id.toString());
-            final String title1 = getTitle(singleItem);
-            if (!title.toString().equals(title1) ) {
-                System.out.println(
-                    "title from 100: " + title.toString() + " title from single call: " + title1 + " for the id= " + id.toString());
-            }
-            // assertThat(title.toString(),equalTo(title1));
+            final Response singleItemResponse = getSingleItem(id.toString());
 
+            final String titleFromSingleItem = getTitle(singleItemResponse);
+            final String rankFromSingleItem = getRank(singleItemResponse);
+            final String releaseYearFromSingleItem = getReleaseYear(singleItemResponse);
+
+            if (title.toString() == null) {
+                System.out.println("title was null for id " + id.toString() + " in the getAll response ");
+            }
+            if (rank.toString() == null) {
+                System.out.println("rank was null for id " + id.toString() + " in the getAll response ");
+            }
+            if (releaseYear.toString() == null) {
+                System.out.println("releaseYear was null for id " + id.toString() + " in the getAll response ");
+            }
+
+            if (!title.toString().equals(titleFromSingleItem)) {
+                System.out.println(
+                    "title from 100: " + title.toString() + " title from single call: " + titleFromSingleItem + " for the id= " + id
+                        .toString());
+            }
+            if (!rank.toString().equals(rankFromSingleItem)) {
+                System.out.println(
+                    "rank from 100: " + rank.toString() + " rank from single call: " + rankFromSingleItem + " for the id= " + id
+                        .toString());
+            }
+            if (!releaseYear.toString().equals(releaseYearFromSingleItem)) {
+                System.out.println("releaseYear from 100: " + releaseYear.toString() + " releaseYear from single call: "
+                    + releaseYearFromSingleItem + " for the id= " + id.toString());
+            }
 
 
         }
-
-
 
     }
 
@@ -81,8 +100,6 @@ public class GetMovies {
             when().get(findAllOneHundred).
             then().log().all().statusCode(200).
             extract().response().jsonPath().get();
-
-
     }
 
     private Response getSingleItem(String id) {
@@ -91,7 +108,6 @@ public class GetMovies {
             when().get(findSingleId + id).
             then().log().all().statusCode(200).
             extract().response();
-
     }
 
     private static String getID(Response response) {
@@ -124,4 +140,5 @@ public class GetMovies {
 
         return response.jsonPath().getString("director");
     }
+
 }
